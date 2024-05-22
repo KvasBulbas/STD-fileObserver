@@ -9,7 +9,26 @@
 #include <QDirIterator>
 #include <QList>
 
+
 int dirSize(const QString dirPath)
+{
+    QDirIterator it(dirPath, QDirIterator::Subdirectories);
+    qint64 total = 0;
+
+    while (it.hasNext()) {
+        total += it.fileInfo().size();
+        it.next();
+    }
+
+    total += it.fileInfo().size();
+
+
+    return total;
+}
+
+
+
+int procentSize(const QString dirPath)
 {
 
 //    QDir dir(DirPath);
@@ -22,31 +41,33 @@ int dirSize(const QString dirPath)
 
     QList<QString> elementName;
 
-    QList<qint32> elementSize;
+    QList<qint64> elementSize;
 
     QDirIterator it(dirPath);
 
-    qint32 total = 0;
+    qint64 total = 0;
+
+    qint64 curDirSize = 0;
+
     while (it.hasNext()) {
         if(it.fileInfo().isFile())
         {
             total += it.fileInfo().size();
-            qDebug() << "is file: " << it.fileName() << ' ' << it.fileInfo().size();
+            curDirSize += it.fileInfo().size();
+            //qDebug() << "is file: " << it.fileName() << ' ' << it.fileInfo().size();
 
         }
 
         if(it.fileInfo().isDir() && it.fileName() != '.' && it.fileName() != "..")
         {
-            qDebug() << "is dir:" << it.fileName();
+            //qDebug() << "is dir:" << it.fileName();
+
+            qint64 subDirSize = dirSize(dirPath + '/' + it.fileName());
+
+            total += subDirSize;
 
             elementName.push_back(it.fileName());
-            int tempSize = dirSize(dirPath + '/' + it.fileName());
-
-            total+= tempSize;
-
-            elementSize
-
-
+            elementSize.push_back(subDirSize);
         }
         it.next();
     }
@@ -54,29 +75,33 @@ int dirSize(const QString dirPath)
     if(it.fileInfo().isFile())
     {
         total += it.fileInfo().size();
-        qDebug() << "is file: " << it.fileName() << ' ' << it.fileInfo().size();
-
-        elementName.push_back(it.fileName());
-        elementSize.push_back(it.fileInfo().size());
+        curDirSize += it.fileInfo().size();
+        //qDebug() << "is file: " << it.fileName() << ' ' << it.fileInfo().size();
     }
 
     if(it.fileInfo().isDir() && it.fileName() != '.' && it.fileName() != "..")
     {
-        qDebug() << "is dir:" << it.fileName();
+        //qDebug() << "is dir:" << it.fileName();
+
+        qint64 subDirSize = dirSize(dirPath + '/' + it.fileName());
+        total += subDirSize;
+
         elementName.push_back(it.fileName());
-        dirSize(dirPath + '/' + it.fileName());
+        elementSize.push_back(subDirSize);
     }
 
     //tabelWIdget.resize(elementName.size());
 
 
+    auto sizeIter = elementSize.begin();
 
-    qDebug() << "size" << total;
+    for(auto nameIter = elementName.begin() ; nameIter != elementName.end(); nameIter++, sizeIter++)
+    {
+        qDebug() << *nameIter << "dir size:" << *sizeIter << "procent dir size" << (double)*sizeIter/total;
+    }
 
+    qDebug() << "total dir size:" << total << "curent dir size" << curDirSize << " procent curent dir size" << (double)curDirSize/total;
     return total;
-
-
-
 }
 
 
@@ -89,7 +114,7 @@ int main(int argc, char *argv[])
 
     const QString dirPath = "Z:/forSTD";
 
-    dirSize(dirPath);
+    procentSize(dirPath);
 
 //    QDir dir(dirPath);
 
