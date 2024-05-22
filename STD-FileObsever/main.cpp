@@ -8,7 +8,7 @@
 #include <QString>
 #include <QDirIterator>
 #include <QList>
-
+#include <QMap>
 
 int dirSize(const QString dirPath)
 {
@@ -28,19 +28,9 @@ int dirSize(const QString dirPath)
 
 
 
-int procentSize(const QString dirPath)
+int procentSizeByDir(const QString dirPath)
 {
-
-//    QDir dir(DirPath);
-
-//    QFileInfo tempFile(dir.absolutePath());
-//    qDebug() <<dir.Size;
-//    QStringList files = dir.entryList();
-
-//    qDebug() << files;
-
     QList<QString> elementName;
-
     QList<qint64> elementSize;
 
     QDirIterator it(dirPath);
@@ -63,7 +53,6 @@ int procentSize(const QString dirPath)
             //qDebug() << "is dir:" << it.fileName();
 
             qint64 subDirSize = dirSize(dirPath + '/' + it.fileName());
-
             total += subDirSize;
 
             elementName.push_back(it.fileName());
@@ -104,6 +93,45 @@ int procentSize(const QString dirPath)
     return total;
 }
 
+void procentSizeBySuf(const QString dirPath)
+{
+    QMap<QString, long long> suffixes;
+
+    long long total = 0;
+
+    QDirIterator it(dirPath, QDirIterator::Subdirectories);
+
+    while (it.hasNext()) {
+        if(it.fileInfo().isFile())
+        {
+            //qDebug() << it.fileInfo().suffix();
+            total += it.fileInfo().size();
+
+            suffixes.insert(it.fileInfo().suffix(), suffixes[it.fileInfo().suffix()] + it.fileInfo().size());
+
+        }
+        it.next();
+    }
+    if(it.fileInfo().isFile())
+    {
+        //qDebug() << it.fileInfo().suffix();
+
+        total += it.fileInfo().size();
+        suffixes.insert(it.fileInfo().suffix(), suffixes[it.fileInfo().suffix()] + it.fileInfo().size());
+
+    }
+    it.next();
+
+    qDebug() << total;
+
+
+    for(auto iter = suffixes.begin(); iter != suffixes.end(); iter++)
+    {
+        qDebug() << iter.key() << "size: " << (double)*iter/total;
+    }
+
+}
+
 
 
 int main(int argc, char *argv[])
@@ -112,22 +140,20 @@ int main(int argc, char *argv[])
     Widget w;
     w.show();
 
-    const QString dirPath = "Z:/forSTD";
+    const QString dirPath = "Z:";
 
-    procentSize(dirPath);
-
-//    QDir dir(dirPath);
-
-////    if(dir.mkpath(path))
-////        qDebug() << "dir is create";
+    //procentSizeByDir(dirPath);
+    procentSizeBySuf(dirPath);
 
 
+//    QMap<QString, int> suffixes;
 
-//    qDebug() << dir.count();
-//    QStringList files = dir.entryList();
+//    suffixes.insert("txt", 3);
 
-    //qDebug() << files;
+//    suffixes.insert("jpeg", 5);
 
+
+//    qDebug() << suffixes["tt"];
 
 
 
