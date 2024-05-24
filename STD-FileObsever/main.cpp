@@ -9,6 +9,7 @@
 #include <QDirIterator>
 #include <QList>
 #include <QMap>
+#include <SizeCounting.h>
 
 int dirSize(const QString dirPath)
 {
@@ -104,9 +105,7 @@ void procentSizeBySuf(const QString dirPath)
     while (it.hasNext()) {
         if(it.fileInfo().isFile())
         {
-            //qDebug() << it.fileInfo().suffix();
             total += it.fileInfo().size();
-
             suffixes.insert(it.fileInfo().suffix(), suffixes[it.fileInfo().suffix()] + it.fileInfo().size());
 
         }
@@ -114,21 +113,73 @@ void procentSizeBySuf(const QString dirPath)
     }
     if(it.fileInfo().isFile())
     {
-        //qDebug() << it.fileInfo().suffix();
-
         total += it.fileInfo().size();
         suffixes.insert(it.fileInfo().suffix(), suffixes[it.fileInfo().suffix()] + it.fileInfo().size());
 
     }
     it.next();
 
-    qDebug() << total;
+//    qDebug() << total;
 
 
-    for(auto iter = suffixes.begin(); iter != suffixes.end(); iter++)
+//    for(auto iter = suffixes.begin(); iter != suffixes.end(); iter++)
+//    {
+//        qDebug() << iter.key() << "size: " << *iter;
+//    }
+
+
+    QList<QString> elementName;
+    //QList<long long> elementSize;
+
+    QList<double> elementSize;
+
+    for(int i = 0; i < suffixes.size(); i++)
     {
-        qDebug() << iter.key() << "size: " << (double)*iter/total;
+        long long maxSize = -1;
+        QString maxElementName = "zero";
+
+        for(auto sizeIter = suffixes.begin(); sizeIter != suffixes.end(); sizeIter++)
+        {
+
+            bool keyExistens = false;
+
+            for(auto nameIter = elementName.begin() ; nameIter != elementName.end(); nameIter++)
+            {
+                if(*nameIter == sizeIter.key())
+                {
+                    keyExistens = true;
+                    break;
+                }
+
+            }
+
+            if(!keyExistens && maxSize < *sizeIter)
+            {
+                maxSize = *sizeIter;
+                maxElementName = sizeIter.key();
+            }
+        }
+
+        elementName.push_back(maxElementName);
+        //elementSize.push_back(maxSize);
+        elementSize.push_back((double)maxSize/total *100);
+
     }
+
+
+    auto sizeIter = elementSize.begin();
+
+    qDebug() << "sorted";
+    double totalProcent = 0;
+
+    for(auto nameIter = elementName.begin() ; nameIter != elementName.end(); nameIter++, sizeIter++)
+    {
+        qDebug() << *nameIter << "dir size:" << *sizeIter << '%';
+
+        totalProcent += *sizeIter;
+    }
+
+    qDebug() << "total procent:" << totalProcent << '%';
 
 }
 
@@ -137,13 +188,28 @@ void procentSizeBySuf(const QString dirPath)
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    Widget w;
-    w.show();
+//    Widget w;
+//    w.show();
 
     const QString dirPath = "Z:";
 
+    SizeCounter* counter = new SizeCounter(new suffix_SizeCounting);
+
+    const QVector<tableItem> table = counter->count(dirPath);
+
+    double totalProcent = 0;
+    for(int i = 0; i < table.size(); i++)
+    {
+        qDebug() << table[i].itemName << "size:" << table[i].itemSize;
+        totalProcent += table[i].itemSize;
+    }
+
+    qDebug() << "total procentage" << totalProcent;
+
+    delete counter;
+
     //procentSizeByDir(dirPath);
-    procentSizeBySuf(dirPath);
+    //procentSizeBySuf(dirPath);
 
 
 //    QMap<QString, int> suffixes;
