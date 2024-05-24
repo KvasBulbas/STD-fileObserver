@@ -24,15 +24,13 @@ public:
 };
 
 
-class suffix_SizeCounting : public ISizeCounting
+class Suffix_SizeCounting : public ISizeCounting
 {
 public:
     const QVector<tableItem> count(const QString& dirPath) override
     {
         QMap<QString, long long> suffixes;
-
         long long total = 0;
-
         QDirIterator it(dirPath, QDirIterator::Subdirectories);
 
         while (it.hasNext()) {
@@ -40,7 +38,6 @@ public:
             {
                 total += it.fileInfo().size();
                 suffixes.insert(it.fileInfo().suffix(), suffixes[it.fileInfo().suffix()] + it.fileInfo().size());
-
             }
             it.next();
         }
@@ -48,9 +45,7 @@ public:
         {
             total += it.fileInfo().size();
             suffixes.insert(it.fileInfo().suffix(), suffixes[it.fileInfo().suffix()] + it.fileInfo().size());
-
         }
-        it.next();
 
 //        qDebug() << total;
 
@@ -83,20 +78,120 @@ public:
                     maxSize = *sizeIter;
                     maxElementName = sizeIter.key();
                 }
-
             }
             sortedTable[i].itemName = maxElementName;
             sortedTable[i].itemSize = (double)maxSize/total *100;
         }
-
-
         return sortedTable;
     }
-
 
 };
 
 
+class Directory_SizeCounting : public ISizeCounting
+{
+    const QVector<tableItem> count(const QString& dirPath) override
+    {
+        QList<QString> elementName;
+        QList<qint64> elementSize;
+
+        QDirIterator it(dirPath);
+
+        qint64 total = 0;
+        qint64 curDirSize = 0;
+
+        while (it.hasNext()) {
+            if(it.fileInfo().isFile())
+            {
+                total += it.fileInfo().size();
+                curDirSize += it.fileInfo().size();
+            }
+
+            if(it.fileInfo().isDir() && it.fileName() != '.' && it.fileName() != "..")
+            {
+                QDirIterator subIt(dirPath + '/' + it.fileName(), QDirIterator::Subdirectories);
+                qint64 subDirSize  = 0;
+
+                while (subIt.hasNext()) {
+                    subDirSize  += subIt.fileInfo().size();
+                    subIt.next();
+                }
+                subDirSize  += it.fileInfo().size();
+
+                total += subDirSize;
+
+                elementName.push_back(it.fileName());
+                elementSize.push_back(subDirSize);
+            }
+            it.next();
+        }
+
+        if(it.fileInfo().isFile())
+        {
+            total += it.fileInfo().size();
+            curDirSize += it.fileInfo().size();
+        }
+
+        if(it.fileInfo().isDir() && it.fileName() != '.' && it.fileName() != "..")
+        {
+            QDirIterator subIt(dirPath + '/' + it.fileName(), QDirIterator::Subdirectories);
+            qint64 subDirSize  = 0;
+
+            while (subIt.hasNext()) {
+                subDirSize  += subIt.fileInfo().size();
+                subIt.next();
+            }
+            subDirSize  += it.fileInfo().size();
+
+            total += subDirSize;
+
+            elementName.push_back(it.fileName());
+            elementSize.push_back(subDirSize);
+        }
+
+        elementName.push_back("current");
+        elementSize.push_back(curDirSize);
+
+//        auto sizeIter1 = elementSize.begin();
+
+//        for(auto nameIter = elementName.begin() ; nameIter != elementName.end(); nameIter++, sizeIter1++)
+//        {
+//            qDebug() << *nameIter << "dir size:" << *sizeIter1;
+//        }
+
+        QVector<tableItem> sortedTable;
+        sortedTable.resize(elementName.size());
+
+        for(int i = 0; i < sortedTable.size(); i++)
+        {
+            long long maxSize = -1;
+            QString maxElementName = "zero";
+
+            auto nameIter = elementName.begin();
+
+            for(auto sizeIter = elementSize.begin(); sizeIter != elementSize.end(); sizeIter++, nameIter++)
+            {
+                bool keyExistens = false;
+
+                for(int j = 0; j < i; j++)
+                    if(sortedTable[j].itemName == *nameIter)
+                    {
+                        keyExistens = true;
+                        break;
+                    }
+
+                if(!keyExistens && maxSize < *sizeIter)
+                {
+                    maxSize = *sizeIter;
+                    maxElementName = *nameIter;
+                }
+            }
+            sortedTable[i].itemName = maxElementName;
+            sortedTable[i].itemSize = (double)maxSize/total *100;
+        }
+        return sortedTable;
+    }
+};
 
 class SizeCounter : public ISizeCounting
 {
