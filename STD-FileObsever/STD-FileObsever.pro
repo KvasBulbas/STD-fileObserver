@@ -13,6 +13,7 @@ SOURCES += \
     widget.cpp
 
 HEADERS += \
+    SizeCounting.h \
     widget.h
 
 # Default rules for deployment.
