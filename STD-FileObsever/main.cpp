@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 //    Widget w;
 //    w.show();
 
-    const QString dirPath = "Z:";
+    const QString dirPath = "Z:/sd";
 
     SizeCounter* dirCounter = new SizeCounter(new Directory_SizeCounting);
     SizeCounter* sufCounter = new SizeCounter(new Suffix_SizeCounting);
