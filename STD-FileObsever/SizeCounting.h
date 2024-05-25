@@ -21,6 +21,41 @@ class ISizeCounting
 public:
     virtual ~ISizeCounting(){}
     virtual const QVector<tableItem> count(const QString& dirPath) = 0;
+
+    virtual const QVector<tableItem> sortTable(QVector<tableItem> table)
+    {
+        QVector<tableItem> sortedTable;
+
+        sortedTable.resize(table.size());
+
+        for(int i = 0; i < sortedTable.size(); i++)
+        {
+            long long maxSize = -1;
+            QString maxElementName = "zero";
+
+            for(auto tableIter = table.begin(); tableIter  != table.end(); tableIter ++)
+            {
+                bool keyExistens = false;
+
+                for(int j = 0; j < i; j++)
+                    if(sortedTable[j].itemName == tableIter->itemName)
+                    {
+                        keyExistens = true;
+                        break;
+                    }
+
+                if(!keyExistens && maxSize < tableIter->itemSize)
+                {
+                    maxSize = tableIter->itemSize;
+                    maxElementName = tableIter->itemName;
+                }
+            }
+            sortedTable[i].itemName = maxElementName;
+            sortedTable[i].itemSize = maxSize;
+        }
+
+        return sortedTable;
+    }
 };
 
 
@@ -47,42 +82,18 @@ public:
             suffixes.insert(it.fileInfo().suffix(), suffixes[it.fileInfo().suffix()] + it.fileInfo().size());
         }
 
-//        qDebug() << total;
+        QVector<tableItem> table;
+        table.resize(suffixes.size());
 
-//        for(auto iter = suffixes.begin(); iter != suffixes.end(); iter++)
-//        {
-//            qDebug() << iter.key() << "size: " << *iter;
-//        }
+        auto sufIter = suffixes.begin();
 
-        QVector<tableItem> sortedTable;
-        sortedTable.resize(suffixes.size());
-
-        for(int i = 0; i < suffixes.size(); i++)
+        for(int i = 0; i < table.size(); i++, sufIter++)
         {
-            long long maxSize = -1;
-            QString maxElementName = "zero";
-
-            for(auto sizeIter = suffixes.begin(); sizeIter != suffixes.end(); sizeIter++)
-            {
-                bool keyExistens = false;
-
-                for(int j = 0; j < i; j++)
-                    if(sortedTable[j].itemName == sizeIter.key())
-                    {
-                        keyExistens = true;
-                        break;
-                    }
-
-                if(!keyExistens && maxSize < *sizeIter)
-                {
-                    maxSize = *sizeIter;
-                    maxElementName = sizeIter.key();
-                }
-            }
-            sortedTable[i].itemName = maxElementName;
-            sortedTable[i].itemSize = (double)maxSize/total *100;
+            table[i].itemName = sufIter.key();
+            table[i].itemSize = *sufIter;
         }
-        return sortedTable;
+
+        return table;
     }
 
 };
@@ -159,37 +170,19 @@ class Directory_SizeCounting : public ISizeCounting
 //            qDebug() << *nameIter << "dir size:" << *sizeIter1;
 //        }
 
-        QVector<tableItem> sortedTable;
-        sortedTable.resize(elementName.size());
+        QVector<tableItem> table;
+        table.resize(elementName.size());
 
-        for(int i = 0; i < sortedTable.size(); i++)
+        auto sizeIter = elementSize.begin();
+        auto nameIter = elementName.begin();
+
+        for(int i = 0; i < table.size(); i++, sizeIter++, nameIter++)
         {
-            long long maxSize = -1;
-            QString maxElementName = "zero";
-
-            auto nameIter = elementName.begin();
-
-            for(auto sizeIter = elementSize.begin(); sizeIter != elementSize.end(); sizeIter++, nameIter++)
-            {
-                bool keyExistens = false;
-
-                for(int j = 0; j < i; j++)
-                    if(sortedTable[j].itemName == *nameIter)
-                    {
-                        keyExistens = true;
-                        break;
-                    }
-
-                if(!keyExistens && maxSize < *sizeIter)
-                {
-                    maxSize = *sizeIter;
-                    maxElementName = *nameIter;
-                }
-            }
-            sortedTable[i].itemName = maxElementName;
-            sortedTable[i].itemSize = (double)maxSize/total *100;
+            table[i].itemName = *nameIter;
+            table[i].itemSize = *sizeIter;
         }
-        return sortedTable;
+
+        return table;
     }
 };
 

@@ -15,14 +15,10 @@
 
 void printTable(const QVector<tableItem> table)
 {
-    double totalProcent = 0;
     for(int i = 0; i < table.size(); i++)
     {
-        qDebug() << table[i].itemName << "size:" << table[i].itemSize << "%";
-        totalProcent += table[i].itemSize;
+        qDebug() << table[i].itemName << "size:" << table[i].itemSize;
     }
-
-    qDebug() << "total procentage" << totalProcent << "%";
 }
 
 
@@ -32,7 +28,7 @@ int main(int argc, char *argv[])
 //    Widget w;
 //    w.show();
 
-    const QString dirPath = "Z:/sd";
+    const QString dirPath = "Z:/Postgre1";
 
     SizeCounter* dirCounter = new SizeCounter(new Directory_SizeCounting);
     SizeCounter* sufCounter = new SizeCounter(new Suffix_SizeCounting);
@@ -44,7 +40,14 @@ int main(int argc, char *argv[])
     printTable(dirTable);
 
     qDebug() << "sufTable:";
-    printTable(sufTable);
+    //printTable(sufTable);
+
+    const QVector<tableItem> sortedTable1 = sufCounter->sortTable(sufTable);
+
+    const QVector<tableItem> sortedTable2 = sufCounter->sortTable(dirTable);
+
+    qDebug() << "sorted table";
+    printTable(sortedTable2);
 
     delete dirCounter;
     delete sufCounter;
