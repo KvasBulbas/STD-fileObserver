@@ -19,38 +19,80 @@ void printTable(const QVector<tableItem> table)
     {
         qDebug() << table[i].itemName << "size:" << table[i].itemSize;
     }
+
+    qDebug() << " ";
+}
+
+
+void algTest(const QString dirPath)
+{
+    SizeCounter* sufCounter = new SizeCounter(new Suffix_SizeCounting);
+
+    const QVector<tableItem> sufTable = sufCounter->count(dirPath);
+
+    qDebug() << "sufTable:";
+    printTable(sufTable);
+
+    const QVector<tableItem> sufSorted= sufCounter->sortTable(sufTable);
+
+    qDebug() << "suf sorted";
+    printTable(sufSorted);
+
+    qDebug() << "suf procntage";
+    printTable(sufCounter->getProcentage(sufSorted));
+
+    qDebug() << "---------------------------------------------------------------------------";
+
+    SizeCounter* dirCounter = new SizeCounter(new Directory_SizeCounting);
+
+    const QVector<tableItem> dirTable = dirCounter->count(dirPath);
+
+    qDebug() << "dirTable:";
+    printTable(dirTable);
+
+    const QVector<tableItem> dirSorted = dirCounter->sortTable(dirTable);
+
+    qDebug() << "dir sorted";
+    printTable(dirSorted);
+
+    qDebug() << "dir procntage";
+    printTable(dirCounter->getProcentage(dirSorted));
+
+    qDebug() << "---------------------------------------------------------------------------";
+
+    delete dirCounter;
+    delete sufCounter;
+
 }
 
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-//    Widget w;
-//    w.show();
+    Widget w;
+    w.show();
 
-    const QString dirPath = "Z:/Postgre1";
 
-    SizeCounter* dirCounter = new SizeCounter(new Directory_SizeCounting);
-    SizeCounter* sufCounter = new SizeCounter(new Suffix_SizeCounting);
+    qDebug() << "empty directory";
 
-    const QVector<tableItem> dirTable = dirCounter->count(dirPath);
-    const QVector<tableItem> sufTable = sufCounter->count(dirPath);
+    algTest("Z:/tests/EmptyDir");
 
-    qDebug() << "dirTable:";
-    printTable(dirTable);
+    qDebug() << "only empty subdirectory";
 
-    qDebug() << "sufTable:";
-    //printTable(sufTable);
+    algTest("Z:/tests/OnlyEmptySubdir");
 
-    const QVector<tableItem> sortedTable1 = sufCounter->sortTable(sufTable);
+    qDebug() << "empty subdirectory";
 
-    const QVector<tableItem> sortedTable2 = sufCounter->sortTable(dirTable);
+    algTest("Z:/tests/EmptySubdir");
 
-    qDebug() << "sorted table";
-    printTable(sortedTable2);
+    qDebug() << "empty current directory";
 
-    delete dirCounter;
-    delete sufCounter;
+    algTest("Z:/tests/EmptyCurDir");
+
+    qDebug() << "big size directory";
+
+    algTest("Z:/tests/BigSizeDir");
+
 
     return a.exec();
 }
