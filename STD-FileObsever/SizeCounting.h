@@ -21,6 +21,55 @@ class ISizeCounting
 public:
     virtual ~ISizeCounting(){}
     virtual const QVector<tableItem> count(const QString& dirPath) = 0;
+
+    virtual const QVector<tableItem> sortTable(QVector<tableItem> table)
+    {
+        QVector<tableItem> sortedTable;
+
+        sortedTable.resize(table.size());
+
+        for(int i = 0; i < sortedTable.size(); i++)
+        {
+            long long maxSize = -1;
+            QString maxElementName = "zero";
+
+            for(auto tableIter = table.begin(); tableIter  != table.end(); tableIter ++)
+            {
+                bool keyExistens = false;
+
+                for(int j = 0; j < i; j++)
+                    if(sortedTable[j].itemName == tableIter->itemName)
+                    {
+                        keyExistens = true;
+                        break;
+                    }
+
+                if(!keyExistens && maxSize < tableIter->itemSize)
+                {
+                    maxSize = tableIter->itemSize;
+                    maxElementName = tableIter->itemName;
+                }
+            }
+            sortedTable[i].itemName = maxElementName;
+            sortedTable[i].itemSize = maxSize;
+        }
+
+        return sortedTable;
+    }
+
+
+    virtual const QVector<tableItem> getProcentage(QVector<tableItem> table)
+    {
+        long long total = 0;
+
+        for(int i = 0; i < table.size(); i++)
+            total += table[i].itemSize;
+
+        for(int i = 0; i < table.size(); i++)
+            table[i].itemSize = table[i].itemSize / total * 100;
+
+        return table;
+    }
 };
 
 
@@ -30,59 +79,37 @@ public:
     const QVector<tableItem> count(const QString& dirPath) override
     {
         QMap<QString, long long> suffixes;
-        long long total = 0;
         QDirIterator it(dirPath, QDirIterator::Subdirectories);
 
         while (it.hasNext()) {
             if(it.fileInfo().isFile())
-            {
-                total += it.fileInfo().size();
                 suffixes.insert(it.fileInfo().suffix(), suffixes[it.fileInfo().suffix()] + it.fileInfo().size());
-            }
             it.next();
         }
         if(it.fileInfo().isFile())
-        {
-            total += it.fileInfo().size();
             suffixes.insert(it.fileInfo().suffix(), suffixes[it.fileInfo().suffix()] + it.fileInfo().size());
-        }
 
-//        qDebug() << total;
-
-//        for(auto iter = suffixes.begin(); iter != suffixes.end(); iter++)
-//        {
-//            qDebug() << iter.key() << "size: " << *iter;
-//        }
-
-        QVector<tableItem> sortedTable;
-        sortedTable.resize(suffixes.size());
-
-        for(int i = 0; i < suffixes.size(); i++)
+        QVector<tableItem> table;
+        if(suffixes.size())
         {
-            long long maxSize = -1;
-            QString maxElementName = "zero";
+            table.resize(suffixes.size());
+            auto sufIter = suffixes.begin();
 
-            for(auto sizeIter = suffixes.begin(); sizeIter != suffixes.end(); sizeIter++)
+            for(int i = 0; i < table.size(); i++, sufIter++)
             {
-                bool keyExistens = false;
-
-                for(int j = 0; j < i; j++)
-                    if(sortedTable[j].itemName == sizeIter.key())
-                    {
-                        keyExistens = true;
-                        break;
-                    }
-
-                if(!keyExistens && maxSize < *sizeIter)
-                {
-                    maxSize = *sizeIter;
-                    maxElementName = sizeIter.key();
-                }
+                table[i].itemName = sufIter.key();
+                table[i].itemSize = *sufIter;
             }
-            sortedTable[i].itemName = maxElementName;
-            sortedTable[i].itemSize = (double)maxSize/total *100;
         }
-        return sortedTable;
+        else
+        {
+            tableItem empty;
+            empty.itemName = "Directory is empty";
+            empty.itemSize = 0;
+            table.push_back(empty);
+        }
+
+        return table;
     }
 
 };
@@ -95,17 +122,15 @@ class Directory_SizeCounting : public ISizeCounting
         QList<QString> elementName;
         QList<qint64> elementSize;
 
+        QVector<tableItem> table;
+
         QDirIterator it(dirPath);
 
-        qint64 total = 0;
         qint64 curDirSize = 0;
 
         while (it.hasNext()) {
             if(it.fileInfo().isFile())
-            {
-                total += it.fileInfo().size();
                 curDirSize += it.fileInfo().size();
-            }
 
             if(it.fileInfo().isDir() && it.fileName() != '.' && it.fileName() != "..")
             {
@@ -118,19 +143,17 @@ class Directory_SizeCounting : public ISizeCounting
                 }
                 subDirSize  += it.fileInfo().size();
 
-                total += subDirSize;
+                tableItem tempTable;
+                tempTable.itemName = it.fileName();
+                tempTable.itemSize = subDirSize;
 
-                elementName.push_back(it.fileName());
-                elementSize.push_back(subDirSize);
+                table.push_back(tempTable);
             }
             it.next();
         }
 
         if(it.fileInfo().isFile())
-        {
-            total += it.fileInfo().size();
             curDirSize += it.fileInfo().size();
-        }
 
         if(it.fileInfo().isDir() && it.fileName() != '.' && it.fileName() != "..")
         {
@@ -143,53 +166,20 @@ class Directory_SizeCounting : public ISizeCounting
             }
             subDirSize  += it.fileInfo().size();
 
-            total += subDirSize;
+            tableItem tempTable;
+            tempTable.itemName = it.fileName();
+            tempTable.itemSize = subDirSize;
 
-            elementName.push_back(it.fileName());
-            elementSize.push_back(subDirSize);
+            table.push_back(tempTable);
         }
 
-        elementName.push_back("current");
-        elementSize.push_back(curDirSize);
+        tableItem tempTable;
+        tempTable.itemName = "current";
+        tempTable.itemSize = curDirSize;
 
-//        auto sizeIter1 = elementSize.begin();
+        table.push_back(tempTable);
 
-//        for(auto nameIter = elementName.begin() ; nameIter != elementName.end(); nameIter++, sizeIter1++)
-//        {
-//            qDebug() << *nameIter << "dir size:" << *sizeIter1;
-//        }
-
-        QVector<tableItem> sortedTable;
-        sortedTable.resize(elementName.size());
-
-        for(int i = 0; i < sortedTable.size(); i++)
-        {
-            long long maxSize = -1;
-            QString maxElementName = "zero";
-
-            auto nameIter = elementName.begin();
-
-            for(auto sizeIter = elementSize.begin(); sizeIter != elementSize.end(); sizeIter++, nameIter++)
-            {
-                bool keyExistens = false;
-
-                for(int j = 0; j < i; j++)
-                    if(sortedTable[j].itemName == *nameIter)
-                    {
-                        keyExistens = true;
-                        break;
-                    }
-
-                if(!keyExistens && maxSize < *sizeIter)
-                {
-                    maxSize = *sizeIter;
-                    maxElementName = *nameIter;
-                }
-            }
-            sortedTable[i].itemName = maxElementName;
-            sortedTable[i].itemSize = (double)maxSize/total *100;
-        }
-        return sortedTable;
+        return table;
     }
 };
 
