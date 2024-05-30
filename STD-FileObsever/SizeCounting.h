@@ -119,9 +119,6 @@ class Directory_SizeCounting : public ISizeCounting
 {
     const QVector<tableItem> count(const QString& dirPath) override
     {
-        QList<QString> elementName;
-        QList<qint64> elementSize;
-
         QVector<tableItem> table;
 
         QDirIterator it(dirPath);
