@@ -2,13 +2,24 @@
 #define WIDGET_H
 
 #include <QWidget>
+#include <QMainWindow>
+#include <QFileSystemModel>
+#include <QTreeView>
+#include <QTableView>
 
-class Widget : public QWidget
+
+class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    Widget(QWidget *parent = nullptr);
-    ~Widget();
+    MainWindow(QMainWindow *parent = nullptr);
+    ~MainWindow();
+
+private:
+    QFileSystemModel *dirModel;
+    QTreeView *treeView;
+
+
 };
 #endif // WIDGET_H

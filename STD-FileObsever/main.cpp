@@ -1,14 +1,6 @@
 #include "widget.h"
-
 #include <QApplication>
 #include <QDebug>
-#include <QFile>
-#include <QFileInfo>
-#include <QDir>
-#include <QString>
-#include <QDirIterator>
-#include <QList>
-#include <QMap>
 #include <SizeCounting.h>
 
 
@@ -69,7 +61,7 @@ void algTest(const QString dirPath)
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    Widget w;
+    MainWindow w;
     w.show();
 
 
