@@ -1,12 +1,12 @@
-#ifndef WIDGET_H
-#define WIDGET_H
+#pragma once
+
+#include "filebrowserdatamodel.h"
 
 #include <QWidget>
 #include <QMainWindow>
 #include <QFileSystemModel>
 #include <QTreeView>
 #include <QTableView>
-
 
 class MainWindow : public QMainWindow
 {
@@ -22,4 +22,3 @@ private:
 
 
 };
-#endif // WIDGET_H

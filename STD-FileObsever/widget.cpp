@@ -1,4 +1,5 @@
 #include "widget.h"
+
 #include <QSplitter>
 #include <QListView>
 #include <QTreeView>
@@ -27,9 +28,29 @@ MainWindow::MainWindow(QMainWindow *parent)
     treeView = new QTreeView();
     treeView->setModel(dirModel);
 
+
+    SizeCounter* sufCounter = new SizeCounter(new Suffix_SizeCounting);
+
+    const QString dirPath = "Z:/tests/BigSizeDir";
+
+    const QVector<TableItem> sufTable = sufCounter->count(dirPath);
+
+
+
+
+    QAbstractItemModel *tablemodel = new FileBrowserDataModel(nullptr, sufTable);
+
+    qDebug() << "programm is correct1";
+
+    QTableView *tableView = new QTableView;
+    tableView->setModel(tablemodel);
+
+    qDebug() << "programm is correct2";
+
     QSplitter *splitter = new QSplitter(parent);
     splitter->addWidget(treeView);
     setCentralWidget(splitter);
+    splitter->addWidget(tableView);
 
 }
 

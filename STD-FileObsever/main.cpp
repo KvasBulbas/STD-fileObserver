@@ -1,11 +1,10 @@
-#include "widget.h"
 #include <QApplication>
 #include <QDebug>
-#include <SizeCounting.h>
 
+#include "widget.h"
+#include "SizeCounting.h"
 
-
-void printTable(const QVector<tableItem> table)
+void printTable(const QVector<TableItem> table)
 {
     for(int i = 0; i < table.size(); i++)
     {
@@ -20,12 +19,12 @@ void algTest(const QString dirPath)
 {
     SizeCounter* sufCounter = new SizeCounter(new Suffix_SizeCounting);
 
-    const QVector<tableItem> sufTable = sufCounter->count(dirPath);
+    const QVector<TableItem> sufTable = sufCounter->count(dirPath);
 
     qDebug() << "sufTable:";
     printTable(sufTable);
 
-    const QVector<tableItem> sufSorted= sufCounter->sortTable(sufTable);
+    const QVector<TableItem> sufSorted= sufCounter->sortTable(sufTable);
 
     qDebug() << "suf sorted";
     printTable(sufSorted);
@@ -37,12 +36,12 @@ void algTest(const QString dirPath)
 
     SizeCounter* dirCounter = new SizeCounter(new Directory_SizeCounting);
 
-    const QVector<tableItem> dirTable = dirCounter->count(dirPath);
+    const QVector<TableItem> dirTable = dirCounter->count(dirPath);
 
     qDebug() << "dirTable:";
     printTable(dirTable);
 
-    const QVector<tableItem> dirSorted = dirCounter->sortTable(dirTable);
+    const QVector<TableItem> dirSorted = dirCounter->sortTable(dirTable);
 
     qDebug() << "dir sorted";
     printTable(dirSorted);
@@ -65,25 +64,25 @@ int main(int argc, char *argv[])
     w.show();
 
 
-    qDebug() << "empty directory";
+//    qDebug() << "empty directory";
 
-    algTest("Z:/tests/EmptyDir");
+//    algTest("Z:/tests/EmptyDir");
 
-    qDebug() << "only empty subdirectory";
+//    qDebug() << "only empty subdirectory";
 
-    algTest("Z:/tests/OnlyEmptySubdir");
+//    algTest("Z:/tests/OnlyEmptySubdir");
 
-    qDebug() << "empty subdirectory";
+//    qDebug() << "empty subdirectory";
 
-    algTest("Z:/tests/EmptySubdir");
+//    algTest("Z:/tests/EmptySubdir");
 
-    qDebug() << "empty current directory";
+//    qDebug() << "empty current directory";
 
-    algTest("Z:/tests/EmptyCurDir");
+//    algTest("Z:/tests/EmptyCurDir");
 
-    qDebug() << "big size directory";
+//    qDebug() << "big size directory";
 
-    algTest("Z:/tests/BigSizeDir");
+//    algTest("Z:/tests/BigSizeDir");
 
 
     return a.exec();
