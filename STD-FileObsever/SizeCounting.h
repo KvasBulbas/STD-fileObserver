@@ -1,18 +1,16 @@
-#ifndef SIZECOUNTING_H
-#define SIZECOUNTING_H
+#pragma once
 
-#endif // SIZECOUNTING_H
 #include <QMap>
 #include <QString>
 #include <QVector>
 #include <QDirIterator>
 
-class tableItem
+class TableItem
 {
 public:
 
     QString itemName;
-    double itemSize;
+    long long itemSize;
 
 };
 
@@ -20,11 +18,11 @@ class ISizeCounting
 {
 public:
     virtual ~ISizeCounting(){}
-    virtual const QVector<tableItem> count(const QString& dirPath) = 0;
+    virtual const QVector<TableItem> count(const QString& dirPath) = 0;
 
-    virtual const QVector<tableItem> sortTable(QVector<tableItem> table)
+    virtual const QVector<TableItem> sortTable(QVector<TableItem> table)
     {
-        QVector<tableItem> sortedTable;
+        QVector<TableItem> sortedTable;
 
         sortedTable.resize(table.size());
 
@@ -58,25 +56,25 @@ public:
     }
 
 
-    virtual const QVector<tableItem> getProcentage(QVector<tableItem> table)
-    {
-        long long total = 0;
+//    virtual const QVector<TableItem> getProcentage(QVector<TableItem> table)
+//    {
+//        long long total = 0;
 
-        for(int i = 0; i < table.size(); i++)
-            total += table[i].itemSize;
+//        for(int i = 0; i < table.size(); i++)
+//            total += table[i].itemSize;
 
-        for(int i = 0; i < table.size(); i++)
-            table[i].itemSize = table[i].itemSize / total * 100;
+//        for(int i = 0; i < table.size(); i++)
+//            table[i].itemSize = table[i].itemSize / total * 100;
 
-        return table;
-    }
+//        return table;
+//    }
 };
 
 
 class Suffix_SizeCounting : public ISizeCounting
 {
 public:
-    const QVector<tableItem> count(const QString& dirPath) override
+    const QVector<TableItem> count(const QString& dirPath) override
     {
         QMap<QString, long long> suffixes;
         QDirIterator it(dirPath, QDirIterator::Subdirectories);
@@ -89,7 +87,7 @@ public:
         if(it.fileInfo().isFile())
             suffixes.insert(it.fileInfo().suffix(), suffixes[it.fileInfo().suffix()] + it.fileInfo().size());
 
-        QVector<tableItem> table;
+        QVector<TableItem> table;
         if(suffixes.size())
         {
             table.resize(suffixes.size());
@@ -103,7 +101,7 @@ public:
         }
         else
         {
-            tableItem empty;
+            TableItem empty;
             empty.itemName = "Directory is empty";
             empty.itemSize = 0;
             table.push_back(empty);
@@ -117,9 +115,9 @@ public:
 
 class Directory_SizeCounting : public ISizeCounting
 {
-    const QVector<tableItem> count(const QString& dirPath) override
+    const QVector<TableItem> count(const QString& dirPath) override
     {
-        QVector<tableItem> table;
+        QVector<TableItem> table;
 
         QDirIterator it(dirPath);
 
@@ -140,7 +138,7 @@ class Directory_SizeCounting : public ISizeCounting
                 }
                 subDirSize  += it.fileInfo().size();
 
-                tableItem tempTable;
+                TableItem tempTable;
                 tempTable.itemName = it.fileName();
                 tempTable.itemSize = subDirSize;
 
@@ -163,14 +161,14 @@ class Directory_SizeCounting : public ISizeCounting
             }
             subDirSize  += it.fileInfo().size();
 
-            tableItem tempTable;
+            TableItem tempTable;
             tempTable.itemName = it.fileName();
             tempTable.itemSize = subDirSize;
 
             table.push_back(tempTable);
         }
 
-        tableItem tempTable;
+        TableItem tempTable;
         tempTable.itemName = "current";
         tempTable.itemSize = curDirSize;
 
@@ -190,7 +188,7 @@ public:
         delete counter;
     }
 
-    const QVector<tableItem> count(const QString& dirPath) override
+    const QVector<TableItem> count(const QString& dirPath) override
     {
         return counter->count(dirPath);
     }
@@ -198,4 +196,3 @@ public:
 private:
     ISizeCounting* counter;
 };
-
