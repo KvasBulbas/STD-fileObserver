@@ -17,7 +17,7 @@ int FileBrowserDataModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
 
-    return PERCENT + 1;
+    return SIZE + 1;
 }
 
 QVariant FileBrowserDataModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -33,8 +33,6 @@ QVariant FileBrowserDataModel::headerData(int section, Qt::Orientation orientati
         return ("Name");
     case SIZE:
         return ("Size");
-    case PERCENT:
-        return ("Percent");
     }
     return QVariant();
 }
@@ -49,8 +47,6 @@ QVariant FileBrowserDataModel::data(const QModelIndex &index, int role) const
         return dataModel[index.row()].itemName;
     } else if (index.column() == 1) {
         return dataModel[index.row()].itemSize;
-    } else if (index.column() == 2) {
-        return 0;
     }
 
     return QVariant();

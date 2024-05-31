@@ -7,18 +7,29 @@
 #include <QFileSystemModel>
 #include <QTreeView>
 #include <QTableView>
+#include <QComboBox>
+#include<QFrame>
 
-class MainWindow : public QMainWindow
+class Widget : public QWidget
 {
     Q_OBJECT
 
+private slots:
+
+    void on_selectionChangedSlot(const QItemSelection &selected, const QItemSelection &deselected);
+
+
 public:
-    MainWindow(QMainWindow *parent = nullptr);
-    ~MainWindow();
+    Widget(QWidget *parent = nullptr);
+    ~Widget();
 
 private:
-    QFileSystemModel *dirModel;
-    QTreeView *treeView;
+    QFileSystemModel *dirModel = nullptr;
+    QTreeView *treeView = nullptr;
+    QAbstractItemModel *tablemodel = nullptr;
+    QTableView *tableView = nullptr;
+    QComboBox *stratagyBox = nullptr;
+    QFrame *topFrame = nullptr;
 
 
 };
