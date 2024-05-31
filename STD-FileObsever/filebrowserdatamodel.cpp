@@ -1,4 +1,6 @@
 #include "filebrowserdatamodel.h"
+#include <QDebug>
+
 
 FileBrowserDataModel::FileBrowserDataModel(QObject *parent, QVector<TableItem> dt)
     : QAbstractTableModel(parent)
@@ -17,14 +19,20 @@ FileBrowserDataModel::FileBrowserDataModel(QString dirPath, int strategy, QObjec
         counter = new SizeCounter(new Suffix_SizeCounting);
         break;
     }
-    dataModel = counter->sortTable(counter->count(dirPath));
-    delete counter;
+
+    if(counter)
+    {
+        dataModel = counter->sortTable(counter->count(dirPath));
+        delete counter;
+    }
 }
 
 
 int FileBrowserDataModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
+
+    //qDebug() << "rowCount";
 
     return dataModel.count();
 }
@@ -33,17 +41,24 @@ int FileBrowserDataModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
 
+    //qDebug() << "columnCount";
+
     return PERCENT + 1;
 }
 
 QVariant FileBrowserDataModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
+    //qDebug() << "headerData1";
+
     if (role != Qt::DisplayRole) {
         return QVariant();
     }
+
+    //qDebug() << "headerData2";
     if (orientation == Qt::Vertical) {
         return section;
     }
+
     switch (section) {
     case NAME:
         return ("Name");
@@ -52,16 +67,22 @@ QVariant FileBrowserDataModel::headerData(int section, Qt::Orientation orientati
     case PERCENT:
         return ("Percent");
     }
+    //qDebug() << "headerData3";
 
     return QVariant();
 }
 
 QVariant FileBrowserDataModel::data(const QModelIndex &index, int role) const
 {
+    //qDebug() << "data1";
+
     if (!index.isValid() || dataModel.count() <= index.row() || (role != Qt::DisplayRole && role != Qt::EditRole))
     {
         return QVariant();
     }
+
+    //qDebug() << "data2";
+
     if (index.column() == 0) {
         return dataModel[index.row()].itemName;
     } else if (index.column() == 1) {
