@@ -29,8 +29,8 @@ void algTest(const QString dirPath)
     qDebug() << "suf sorted";
     printTable(sufSorted);
 
-    qDebug() << "suf procntage";
-    printTable(sufCounter->getProcentage(sufSorted));
+//    qDebug() << "suf procntage";
+//    printTable(sufCounter->getProcentage(sufSorted));
 
     qDebug() << "---------------------------------------------------------------------------";
 
@@ -46,8 +46,8 @@ void algTest(const QString dirPath)
     qDebug() << "dir sorted";
     printTable(dirSorted);
 
-    qDebug() << "dir procntage";
-    printTable(dirCounter->getProcentage(dirSorted));
+//    qDebug() << "dir procntage";
+//    printTable(dirCounter->getProcentage(dirSorted));
 
     qDebug() << "---------------------------------------------------------------------------";
 

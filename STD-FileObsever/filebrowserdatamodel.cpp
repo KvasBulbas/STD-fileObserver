@@ -17,7 +17,7 @@ FileBrowserDataModel::FileBrowserDataModel(QString dirPath, int strategy, QObjec
         counter = new SizeCounter(new Suffix_SizeCounting);
         break;
     }
-    dataModel = counter->count(dirPath);
+    dataModel = counter->sortTable(counter->count(dirPath));
     delete counter;
 }
 
@@ -33,7 +33,7 @@ int FileBrowserDataModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
 
-    return SIZE + 1;
+    return PERCENT + 1;
 }
 
 QVariant FileBrowserDataModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -49,7 +49,10 @@ QVariant FileBrowserDataModel::headerData(int section, Qt::Orientation orientati
         return ("Name");
     case SIZE:
         return ("Size");
+    case PERCENT:
+        return ("Percent");
     }
+
     return QVariant();
 }
 
@@ -63,6 +66,14 @@ QVariant FileBrowserDataModel::data(const QModelIndex &index, int role) const
         return dataModel[index.row()].itemName;
     } else if (index.column() == 1) {
         return dataModel[index.row()].itemSize;
+    }else if (index.column() == 2) {
+
+        long long total = 0;
+
+        for(int i = 0; i < dataModel.size(); i++)
+            total += dataModel[i].itemSize;
+
+        return QString::number((double)dataModel[index.row()].itemSize/total*100) + "%";
     }
 
     return QVariant();

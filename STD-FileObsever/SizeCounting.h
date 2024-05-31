@@ -10,7 +10,7 @@ class TableItem
 public:
 
     QString itemName;
-    double itemSize;
+    long long itemSize;
 
 };
 
@@ -56,18 +56,18 @@ public:
     }
 
 
-    virtual const QVector<TableItem> getProcentage(QVector<TableItem> table)
-    {
-        long long total = 0;
+//    virtual const QVector<TableItem> getProcentage(QVector<TableItem> table)
+//    {
+//        long long total = 0;
 
-        for(int i = 0; i < table.size(); i++)
-            total += table[i].itemSize;
+//        for(int i = 0; i < table.size(); i++)
+//            total += table[i].itemSize;
 
-        for(int i = 0; i < table.size(); i++)
-            table[i].itemSize = table[i].itemSize / total * 100;
+//        for(int i = 0; i < table.size(); i++)
+//            table[i].itemSize = table[i].itemSize / total * 100;
 
-        return table;
-    }
+//        return table;
+//    }
 };
 
 

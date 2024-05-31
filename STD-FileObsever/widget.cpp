@@ -47,8 +47,6 @@ Widget::Widget(QWidget *parent)
     vbox->addLayout(hbox2);
     vbox->addLayout(hbox1);
 
-
-
     connect(treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &Widget::on_selectionChangedSlot);
     connect(stratagyBox, qOverload<int>(&QComboBox::currentIndexChanged), this, &Widget::on_selectionChangedStrategy);
 }
@@ -70,10 +68,6 @@ void Widget::on_selectionChangedSlot(const QItemSelection &selected, const QItem
     Q_UNUSED(deselected);
     QModelIndex index = treeView->selectionModel()->currentIndex();
     QString dirPath = dirModel->filePath(index);
-
-    qDebug() << dirPath;
-
-    qDebug() << stratagyBox->currentIndex();
 
     if(dirPath != "")
     {

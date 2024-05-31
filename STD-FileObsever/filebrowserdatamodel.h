@@ -23,7 +23,8 @@ public:
 private:
     enum NameColumn {
         NAME = 0,
-        SIZE
+        SIZE,
+        PERCENT
     };
 
     enum Strategy{
