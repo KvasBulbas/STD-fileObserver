@@ -6,6 +6,22 @@ FileBrowserDataModel::FileBrowserDataModel(QObject *parent, QVector<TableItem> d
     dataModel = dt;
 }
 
+FileBrowserDataModel::FileBrowserDataModel(QString dirPath, int strategy, QObject *parent) : QAbstractTableModel(parent)
+{
+    SizeCounter* counter = nullptr;
+    switch (strategy) {
+    case DIR_COUNTING:
+        counter = new SizeCounter(new Directory_SizeCounting);
+        break;
+    case SUF_COUNTING:
+        counter = new SizeCounter(new Suffix_SizeCounting);
+        break;
+    }
+    dataModel = counter->count(dirPath);
+    delete counter;
+}
+
+
 int FileBrowserDataModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)

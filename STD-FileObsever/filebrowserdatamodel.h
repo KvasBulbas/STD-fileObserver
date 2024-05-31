@@ -10,6 +10,8 @@ class FileBrowserDataModel : public QAbstractTableModel
 
 public:
     FileBrowserDataModel(QObject *parent = nullptr, QVector<TableItem> dt = QVector<TableItem>());
+    FileBrowserDataModel( QString dirPath, int strategy, QObject *parent = nullptr);
+
 
     int rowCount(const QModelIndex &parent) const;
     int columnCount(const QModelIndex &parent) const;
@@ -17,10 +19,16 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 
 
+
 private:
     enum NameColumn {
         NAME = 0,
         SIZE
+    };
+
+    enum Strategy{
+        DIR_COUNTING,
+        SUF_COUNTING
     };
 
     QVector<TableItem> dataModel;

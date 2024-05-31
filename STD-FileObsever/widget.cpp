@@ -48,43 +48,43 @@ Widget::Widget(QWidget *parent)
     vbox->addLayout(hbox1);
 
 
-    QItemSelectionModel *selectionModel = treeView->selectionModel();
-//    QModelIndex rootIx = dirModel->index(0, 0, QModelIndex());//корневой элемент
 
-//    QModelIndex indexHomePath = dirModel->index(homePath);
-//    QFileInfo fileInfo = dirModel->fileInfo(indexHomePath);
-
-    connect(selectionModel, SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),
-            this, SLOT(on_selectionChangedSlot(const QItemSelection &, const QItemSelection &)));
-
+    connect(treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &Widget::on_selectionChangedSlot);
+    connect(stratagyBox, qOverload<int>(&QComboBox::currentIndexChanged), this, &Widget::on_selectionChangedStrategy);
 }
 
 Widget::~Widget()
 {
 }
 
+void Widget::on_selectionChangedStrategy(int index)
+{
+    Q_UNUSED(index);
+
+    on_selectionChangedSlot();
+}
+
 void Widget::on_selectionChangedSlot(const QItemSelection &selected, const QItemSelection &deselected)
 {
-    //Q_UNUSED(selected);
+    Q_UNUSED(selected);
     Q_UNUSED(deselected);
     QModelIndex index = treeView->selectionModel()->currentIndex();
     QString dirPath = dirModel->filePath(index);
 
     qDebug() << dirPath;
 
-    SizeCounter* counter = new SizeCounter(new Directory_SizeCounting);
+    qDebug() << stratagyBox->currentIndex();
 
-    const QVector<TableItem> table = counter->count(dirPath);
+    if(dirPath != "")
+    {
+        if(tablemodel != nullptr)
+            delete tablemodel;
 
+        tablemodel = new FileBrowserDataModel(dirPath, stratagyBox->currentIndex(),nullptr);
 
-    if(tablemodel != nullptr)
-        delete tablemodel;
+        tableView->setModel(tablemodel);
+    }
 
-    tablemodel = new FileBrowserDataModel(nullptr, table);
-
-    tableView->setModel(tablemodel);
-
-    delete counter;
 
 }
 
