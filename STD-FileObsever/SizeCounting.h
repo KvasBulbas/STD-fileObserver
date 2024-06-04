@@ -1,4 +1,4 @@
-#pragma once
+    #pragma once
 
 #include <QMap>
 #include <QString>
@@ -185,7 +185,6 @@ public:
 
     ~SizeCounter()
     {
-        delete counter;
     }
 
     const QVector<TableItem> count(const QString& dirPath) override
