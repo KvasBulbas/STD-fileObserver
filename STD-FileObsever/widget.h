@@ -9,6 +9,7 @@
 #include <QTableView>
 #include <QComboBox>
 #include<QFrame>
+#include <QPushButton>
 
 class Widget : public QWidget
 {
@@ -17,8 +18,6 @@ class Widget : public QWidget
 private slots:
 
     void on_selectionChangedSlot(const QItemSelection &selected = QItemSelection(), const QItemSelection &deselected = QItemSelection());
-    void on_selectionChangedStrategy(int index);
-
 
 public:
     Widget(QWidget *parent = nullptr);
@@ -27,10 +26,11 @@ public:
 private:
     QFileSystemModel *dirModel = nullptr;
     QTreeView *treeView = nullptr;
-    QAbstractItemModel *tablemodel = nullptr;
+    FileBrowserDataModel *tablemodel = nullptr;
     QTableView *tableView = nullptr;
     QComboBox *stratagyBox = nullptr;
     QFrame *topFrame = nullptr;
+    QPushButton *calcButton = nullptr;
 
 
 };

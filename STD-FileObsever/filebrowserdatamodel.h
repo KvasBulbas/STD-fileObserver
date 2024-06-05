@@ -10,14 +10,18 @@ class FileBrowserDataModel : public QAbstractTableModel
 
 public:
     FileBrowserDataModel(QObject *parent = nullptr, QVector<TableItem> dt = QVector<TableItem>());
-    FileBrowserDataModel( QString dirPath, int strategy, QObject *parent = nullptr);
-
+    ~FileBrowserDataModel();
 
     int rowCount(const QModelIndex &parent) const;
     int columnCount(const QModelIndex &parent) const;
     QVariant data(const QModelIndex &index, int role) const;
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 
+
+public slots:
+    void updateData();
+    void setPath(const QString newPath);
+    void setStrategy(int index);
 
 
 private:
@@ -27,10 +31,9 @@ private:
         PERCENT
     };
 
-    enum Strategy{
-        DIR_COUNTING,
-        SUF_COUNTING
-    };
-
     QVector<TableItem> dataModel;
+    QString dirPath = "";
+    QVector<ISizeCounting*> strategiesPtr;
+    SizeCounter* counter;
+
 };
