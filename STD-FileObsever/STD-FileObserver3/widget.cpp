@@ -60,14 +60,20 @@ Widget::Widget(QWidget *parent)
         vbox->addLayout(hbox1);
     }
 
+    listAdapter = new ListAdapter(tablemodel);
+    counterAdapter.attach(listAdapter);
+
+    //counterAdapter.detach(listAdapter);
+
     connect(treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &Widget::on_selectionChangedSlot);
-    connect(stratagyBox, qOverload<int>(&QComboBox::currentIndexChanged), tablemodel, &FileBrowserDataModel::setStrategy);
-    connect(calcButton, &QPushButton::pressed, tablemodel, &FileBrowserDataModel::updateData);
-    //disconnect(calcButton, &QPushButton::pressed, tablemodel, &FileBrowserDataModel::updateData);
+    connect(calcButton, &QPushButton::pressed, &counterAdapter, &SizeCounterAdapter::count);
+    connect(stratagyBox, qOverload<int>(&QComboBox::currentIndexChanged), &counterAdapter, &SizeCounterAdapter::setStrategy);
 }
+
 
 Widget::~Widget()
 {
+    delete listAdapter;
 }
 
 
@@ -81,7 +87,7 @@ void Widget::on_selectionChangedSlot(const QItemSelection &selected, const QItem
 
     if(dirPath != "")
     {
-        tablemodel->setPath(dirPath);
+        counterAdapter.setPath(dirPath);
     }
 
 }
