@@ -4,15 +4,14 @@
 #include "obsever.h"
 #include "QDebug"
 
-class SizeCounterAdapter : public ASubject
+class SizeCounterStorage : public ASubject
 {
     Q_OBJECT
 public:
 
-    static SizeCounterAdapter& instanse()
+    static SizeCounterStorage& instanse()
     {
-        static SizeCounterAdapter s;
-
+        static SizeCounterStorage s;
         return s;
     }
 
@@ -25,9 +24,9 @@ public:
 public slots:
     void count()
     {
-        qDebug() << "cousdsnt";
-
-        emit notify(counter->sortTable(counter->count(dirPath)));
+        qDebug() << "count";
+        if(dirPath != "")
+            emit notify(counter->sortTable(counter->count(dirPath)));
     }
 
     void setStrategy(int index)
@@ -41,31 +40,27 @@ public slots:
         }
     }
 
-
-
 private:
-    SizeCounterAdapter()
+    SizeCounterStorage()
     {
         strategiesPtr.push_back(new Directory_SizeCounting);
         strategiesPtr.push_back(new Suffix_SizeCounting);
         counter = new SizeCounter(strategiesPtr[0]);
     }
 
-    ~SizeCounterAdapter()
+    ~SizeCounterStorage()
     {
         delete counter;
         for(int i = 0; i < strategiesPtr.size(); i++)
             delete strategiesPtr[i];
     }
 
-    SizeCounterAdapter(SizeCounterAdapter const&);
-    SizeCounterAdapter& operator=(SizeCounterAdapter const&);
+    SizeCounterStorage(SizeCounterStorage const&);
+    SizeCounterStorage& operator=(SizeCounterStorage const&);
 
     QVector<ISizeCounting*> strategiesPtr;
     SizeCounter* counter;
     QString dirPath = "";
-    TableItem item;
-
 };
 
 

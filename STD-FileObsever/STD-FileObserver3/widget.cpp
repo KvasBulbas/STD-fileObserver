@@ -15,8 +15,6 @@
 #include <QVBoxLayout>
 
 
-
-
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
 {
@@ -28,45 +26,28 @@ Widget::Widget(QWidget *parent)
     treeView = new QTreeView(this);
     treeView->setModel(dirModel);
 
-
+    tableAdapter = new TableAdapter(new FileBrowserDataModel);
 
     tableView = new QTableView(this);
+    tableView->setModel(tableAdapter->getModel());
 
-    listAdapter = new TableAdapter(new FileBrowserDataModel);
-
-
-    tableView->setModel(listAdapter->getModel());
-    //tableView->setModel(listAdapter->getModel());
-
-
+    pieAdapter = new PieChartAdapter(new QChart);
 
     pieView = new QChartView(this);
+    pieView->setChart(pieAdapter->getModel());
+
+    barAdapter = new BarChartAdapter(new QChart);
+
     barView = new QChartView(this);
+    barView->setChart(barAdapter->getModel());
 
     stackedView = new QStackedWidget(this);
-
-    stackedView->addWidget(tableView);
-    stackedView->addWidget(barView);
-    stackedView->addWidget(pieView);
-
-    SizeCounter counter = new SizeCounter(new Directory_SizeCounting);
-    SizeCounter counter1 = new SizeCounter(new Suffix_SizeCounting);
-
-    QChart* pieChart = pieChartCreator->createChart(counter.count("Z:/tests/EmptyCurDir"));
-    QChart* barChart = barChartCreator->createChart(counter.count("Z:/tests/BigSizeDir"));
-
-
-
-    pieView->setChart(pieChart);
-
-    pieChartCreator->createChart(counter1.count("Z:/tests/EmptyCurDir"), pieChart);
-
-    barView->setChart(barChart);
-
-
-
-
-
+    if(stackedView)
+    {
+        stackedView->addWidget(tableView);
+        stackedView->addWidget(barView);
+        stackedView->addWidget(pieView);
+    }
 
     QHBoxLayout *hbox1 = new QHBoxLayout();
     if(hbox1)
@@ -101,25 +82,23 @@ Widget::Widget(QWidget *parent)
         vbox->addLayout(hbox1);
     }
 
-    counterAdapter.attach(listAdapter);
-
+    counterAdapter.attach(tableAdapter);
+    counterAdapter.attach(pieAdapter);
+    counterAdapter.attach(barAdapter);
     //counterAdapter.detach(listAdapter);
 
     connect(treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &Widget::on_selectionChangedSlot);
-    connect(calcButton, &QPushButton::pressed, &counterAdapter, &SizeCounterAdapter::count);
-    connect(stratagyBox, qOverload<int>(&QComboBox::currentIndexChanged), &counterAdapter, &SizeCounterAdapter::setStrategy);
+    connect(calcButton, &QPushButton::pressed, &counterAdapter, &SizeCounterStorage::count);
+    connect(stratagyBox, qOverload<int>(&QComboBox::currentIndexChanged), &counterAdapter, &SizeCounterStorage::setStrategy);
     connect(viewBox, qOverload<int>(&QComboBox::currentIndexChanged), stackedView, &QStackedWidget::setCurrentIndex);
 }
 
-
 Widget::~Widget()
 {
-    delete listAdapter;
-    //delete pieChartCreator;
-    //delete barChartCreator;
+    delete tableAdapter;
+    delete pieAdapter;
+    delete barAdapter;
 }
-
-
 
 void Widget::on_selectionChangedSlot(const QItemSelection &selected, const QItemSelection &deselected)
 {

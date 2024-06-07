@@ -14,9 +14,7 @@ public:
     void attach(ModelObserver* model)
     {
         qDebug() << "attach";
-
         connect(this, &ASubject::notify, model, &ModelObserver::update);
-
     }
 
     void detach(ModelObserver* model)
@@ -29,11 +27,5 @@ signals:
     void notify(QVector<TableItem> table);
 
 };
-
-
-
-
-
-
 
 #endif // OBSEVER_H

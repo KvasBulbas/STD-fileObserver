@@ -10,7 +10,6 @@ class ModelObserver : public QObject
     Q_OBJECT
 public slots:
     virtual void update(QVector<TableItem> table) = 0;
-    virtual FileBrowserDataModel* getModel() = 0;
 
 };
 
@@ -21,42 +20,93 @@ class TableAdapter: public ModelObserver
 
 
 public:
-    TableAdapter(FileBrowserDataModel* listModel) : listModel(listModel){}
+    TableAdapter(FileBrowserDataModel* tableModel) : tableModel(tableModel){}
 
-    FileBrowserDataModel* getModel() override
+    FileBrowserDataModel* getModel()
     {
-        return listModel;
+        return  tableModel;
     }
 
     ~TableAdapter()
     {
-        delete listModel;
-    }
-
-    operator FileBrowserDataModel*()
-    {
-        return listModel;
+        delete tableModel;
     }
 
 public slots:
     void update(QVector<TableItem> table) override
     {
-        qDebug() << "uprdate";
-        listModel->updateData(table);
+        qDebug() << "table adapter update";
+        tableModel->updateData(table);
     }
 
 private:
-    FileBrowserDataModel* listModel;
+    FileBrowserDataModel* tableModel;
 };
 
 
 class PieChartAdapter: public ModelObserver
 {
+    Q_OBJECT
+public:
+    PieChartAdapter(QChart* chart):chart(chart){}
 
+    ~PieChartAdapter()
+    {
+        delete chart;
+    }
+
+    QChart* getModel()
+    {
+        return  chart;
+    }
+
+public slots:
+    void update(QVector<TableItem> table) override
+    {
+        qDebug() << "pie chart adapter update";
+
+        PieChartCreator pieCreator;
+        pieCreator.createChart(table, chart);
+    }
 
 private:
-    FileBrowserDataModel* listModel;
+    QChart* chart;
+
 };
+
+class BarChartAdapter: public ModelObserver
+{
+    Q_OBJECT
+public:
+    BarChartAdapter(QChart* chart):chart(chart){}
+
+    ~BarChartAdapter()
+    {
+        delete chart;
+    }
+
+    QChart* getModel()
+    {
+        return  chart;
+    }
+
+public slots:
+    void update(QVector<TableItem> table) override
+    {
+        qDebug() << "bar chart adapter update";
+
+        BarChartCreator barCreator;
+        barCreator.createChart(table, chart);
+    }
+
+private:
+    QChart* chart;
+
+};
+
+
+
+
 
 
 #endif // MODELADAPTER_H

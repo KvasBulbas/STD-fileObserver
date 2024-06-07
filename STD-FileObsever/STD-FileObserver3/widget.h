@@ -1,8 +1,6 @@
 #pragma once
 
-#include "filebrowserdatamodel.h"
 #include <sizecounteradapter.h>
-#include "chartcomponent.h"
 
 #include <QWidget>
 #include <QMainWindow>
@@ -30,21 +28,23 @@ public:
 private:
     QFileSystemModel *dirModel = nullptr;
     QTreeView *treeView = nullptr;
-    FileBrowserDataModel *tablemodel = nullptr;
+
+    TableAdapter* tableAdapter = nullptr;
     QTableView *tableView = nullptr;
+
+    PieChartAdapter* pieAdapter = nullptr;
+    QChartView* pieView = nullptr;
+
+    BarChartAdapter* barAdapter = nullptr;
+    QChartView* barView = nullptr;
+
     QComboBox *stratagyBox = nullptr;
-    QComboBox *viewBox;
+    QComboBox *viewBox = nullptr;
     QFrame *topFrame = nullptr;
     QPushButton *calcButton = nullptr;
-    SizeCounterAdapter &counterAdapter = SizeCounterAdapter::instanse();
-    TableAdapter* listAdapter = nullptr;
-
-    QChartView* pieView;
-    QChartView* barView;
-
     QStackedWidget* stackedView;
 
-    ChartComponent* pieChartCreator = new PieChart();
-    ChartComponent* barChartCreator = new BarChart();
+    SizeCounterStorage &counterAdapter = SizeCounterStorage::instanse();
+
 
 };

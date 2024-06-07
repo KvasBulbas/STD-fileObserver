@@ -8,39 +8,35 @@
 #include <QStackedBarSeries>
 #include <SizeCounting.h>
 
-class ChartComponent
+class ChartComponentCreator
 {
 public:
-    QChart* createChart(QVector<TableItem> table, QChart* chart = nullptr){
+    void createChart(QVector<TableItem> table, QChart* chart)
+    {
         allocateChart(&chart);
+        addVisualization(chart);
         drawChart(table, chart);
-        drawLegend();
-        if(chart)
-            qDebug() << "chart not empty";
-        return chart;
     }
 
 protected:
     void allocateChart(QChart** chart)
     {
-        qDebug() <<  "allocate";
         if(!(*chart))
         {
-            qDebug() << "newChart";
             *chart = new QChart;
         }
     }
 
     virtual void drawChart(QVector<TableItem> table, QChart* chart) = 0;
-    virtual void drawLegend(){}
+    virtual void addVisualization(QChart* chart);
 };
 
-class PieChart : public ChartComponent
+class PieChartCreator : public ChartComponentCreator
 {
     void drawChart(QVector<TableItem> table, QChart* chart) override;
 };
 
-class BarChart : public ChartComponent
+class BarChartCreator : public ChartComponentCreator
 {
     void drawChart(QVector<TableItem> table, QChart* chart) override;
 };
