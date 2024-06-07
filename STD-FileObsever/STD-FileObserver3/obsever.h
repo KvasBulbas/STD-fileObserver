@@ -2,7 +2,6 @@
 #define OBSEVER_H
 
 #include "modeladapter.h"
-
 #include <QVector>
 
 class ASubject : public QObject

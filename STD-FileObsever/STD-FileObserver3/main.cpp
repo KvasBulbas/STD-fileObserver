@@ -61,39 +61,8 @@ void algTest(const QString dirPath)
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-
-//    std::make_shared<Suffix_SizeCounting> suf;
-//    std::shared_ptr<Directory_SizeCounting> dir;
-
-
-//    Suffix_SizeCounting* suf = new Suffix_SizeCounting;
-//    Directory_SizeCounting* dir = new Directory_SizeCounting;
-
-
-//    SizeCounter* counter1 = new SizeCounter(suf);
-//    SizeCounter* counter2 = new SizeCounter(dir);
-
-//    const QVector<TableItem> sufTable = counter1->count("Z:/tests/BigSizeDir");
-
-//    const QVector<TableItem> dirTable = counter2->count("Z:/tests/BigSizeDir");
-
-//    printTable(sufTable);
-//    printTable(dirTable);
-
-
-//    delete suf;
-//    delete dir;
-
-//    delete counter1;
-//    delete counter2;
     Widget w;
     w.show();
-
-
-
-    //SizeCounter* sufCounter = new SizeCounter(new (ISizeCounting::types::Suffix_SizeCounting));
-
-
 
 //    qDebug() << "empty directory";
 
@@ -114,7 +83,6 @@ int main(int argc, char *argv[])
 //    qDebug() << "big size directory";
 
 //    algTest("Z:/tests/BigSizeDir");
-
 
     return a.exec();
 }

@@ -17,7 +17,6 @@ class Widget : public QWidget
     Q_OBJECT
 
 private slots:
-
     void on_selectionChangedSlot(const QItemSelection &selected = QItemSelection(), const QItemSelection &deselected = QItemSelection());
 
 

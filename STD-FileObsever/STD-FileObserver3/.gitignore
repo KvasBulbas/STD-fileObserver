@@ -72,3 +72,4 @@ CMakeLists.txt.user*
 *.dll
 *.exe
 
+/build-STD-FileObserver3-Desktop_Qt_5_15_2_MinGW_64_bit-Debug
