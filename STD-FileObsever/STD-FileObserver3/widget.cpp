@@ -15,7 +15,6 @@
 #include <QVBoxLayout>
 
 
-
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
 {
@@ -27,15 +26,34 @@ Widget::Widget(QWidget *parent)
     treeView = new QTreeView(this);
     treeView->setModel(dirModel);
 
+    tableAdapter = new TableAdapter(new FileBrowserDataModel);
+
     tableView = new QTableView(this);
-    tablemodel = new FileBrowserDataModel(this);
-    tableView->setModel(tablemodel);
+    tableView->setModel(tableAdapter->getModel());
+
+    pieAdapter = new PieChartAdapter(new QChart);
+
+    pieView = new QChartView(this);
+    pieView->setChart(pieAdapter->getModel());
+
+    barAdapter = new BarChartAdapter(new QChart);
+
+    barView = new QChartView(this);
+    barView->setChart(barAdapter->getModel());
+
+    stackedView = new QStackedWidget(this);
+    if(stackedView)
+    {
+        stackedView->addWidget(tableView);
+        stackedView->addWidget(barView);
+        stackedView->addWidget(pieView);
+    }
 
     QHBoxLayout *hbox1 = new QHBoxLayout();
     if(hbox1)
     {
         hbox1->addWidget(treeView);
-        hbox1->addWidget(tableView);
+        hbox1->addWidget(stackedView);
     }
 
     topFrame = new QFrame(this);
@@ -44,12 +62,16 @@ Widget::Widget(QWidget *parent)
     stratagyBox = new QComboBox(this);
     stratagyBox->addItems({"Directory sizes", "Suffix sizes"});
 
+    viewBox = new QComboBox(this);
+    viewBox->addItems({"Table", "Bar", "Pie"});
+
     calcButton = new QPushButton("Get sizes");
 
     QHBoxLayout *hbox2 = new QHBoxLayout(topFrame);
     if(hbox2)
     {
         hbox2->addWidget(calcButton);
+        hbox2->addWidget(viewBox);
         hbox2->addWidget(stratagyBox);
     }
 
@@ -60,17 +82,23 @@ Widget::Widget(QWidget *parent)
         vbox->addLayout(hbox1);
     }
 
+    counterAdapter.attach(tableAdapter);
+    counterAdapter.attach(pieAdapter);
+    counterAdapter.attach(barAdapter);
+    //counterAdapter.detach(listAdapter);
+
     connect(treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &Widget::on_selectionChangedSlot);
-    connect(stratagyBox, qOverload<int>(&QComboBox::currentIndexChanged), tablemodel, &FileBrowserDataModel::setStrategy);
-    connect(calcButton, &QPushButton::pressed, tablemodel, &FileBrowserDataModel::updateData);
-    //disconnect(calcButton, &QPushButton::pressed, tablemodel, &FileBrowserDataModel::updateData);
+    connect(calcButton, &QPushButton::pressed, &counterAdapter, &SizeCounterStorage::count);
+    connect(stratagyBox, qOverload<int>(&QComboBox::currentIndexChanged), &counterAdapter, &SizeCounterStorage::setStrategy);
+    connect(viewBox, qOverload<int>(&QComboBox::currentIndexChanged), stackedView, &QStackedWidget::setCurrentIndex);
 }
 
 Widget::~Widget()
 {
+    delete tableAdapter;
+    delete pieAdapter;
+    delete barAdapter;
 }
-
-
 
 void Widget::on_selectionChangedSlot(const QItemSelection &selected, const QItemSelection &deselected)
 {
@@ -81,7 +109,8 @@ void Widget::on_selectionChangedSlot(const QItemSelection &selected, const QItem
 
     if(dirPath != "")
     {
-        tablemodel->setPath(dirPath);
+        counterAdapter.setPath(dirPath);
     }
 
 }
+
