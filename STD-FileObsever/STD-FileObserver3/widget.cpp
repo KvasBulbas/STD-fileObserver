@@ -16,6 +16,7 @@
 
 
 
+
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
 {
@@ -27,15 +28,51 @@ Widget::Widget(QWidget *parent)
     treeView = new QTreeView(this);
     treeView->setModel(dirModel);
 
+
+
     tableView = new QTableView(this);
-    tablemodel = new FileBrowserDataModel(this);
-    tableView->setModel(tablemodel);
+
+    listAdapter = new TableAdapter(new FileBrowserDataModel);
+
+
+    tableView->setModel(listAdapter->getModel());
+    //tableView->setModel(listAdapter->getModel());
+
+
+
+    pieView = new QChartView(this);
+    barView = new QChartView(this);
+
+    stackedView = new QStackedWidget(this);
+
+    stackedView->addWidget(tableView);
+    stackedView->addWidget(barView);
+    stackedView->addWidget(pieView);
+
+    SizeCounter counter = new SizeCounter(new Directory_SizeCounting);
+    SizeCounter counter1 = new SizeCounter(new Suffix_SizeCounting);
+
+    QChart* pieChart = pieChartCreator->createChart(counter.count("Z:/tests/EmptyCurDir"));
+    QChart* barChart = barChartCreator->createChart(counter.count("Z:/tests/BigSizeDir"));
+
+
+
+    pieView->setChart(pieChart);
+
+    pieChartCreator->createChart(counter1.count("Z:/tests/EmptyCurDir"), pieChart);
+
+    barView->setChart(barChart);
+
+
+
+
+
 
     QHBoxLayout *hbox1 = new QHBoxLayout();
     if(hbox1)
     {
         hbox1->addWidget(treeView);
-        hbox1->addWidget(tableView);
+        hbox1->addWidget(stackedView);
     }
 
     topFrame = new QFrame(this);
@@ -44,12 +81,16 @@ Widget::Widget(QWidget *parent)
     stratagyBox = new QComboBox(this);
     stratagyBox->addItems({"Directory sizes", "Suffix sizes"});
 
+    viewBox = new QComboBox(this);
+    viewBox->addItems({"Table", "Bar", "Pie"});
+
     calcButton = new QPushButton("Get sizes");
 
     QHBoxLayout *hbox2 = new QHBoxLayout(topFrame);
     if(hbox2)
     {
         hbox2->addWidget(calcButton);
+        hbox2->addWidget(viewBox);
         hbox2->addWidget(stratagyBox);
     }
 
@@ -60,7 +101,6 @@ Widget::Widget(QWidget *parent)
         vbox->addLayout(hbox1);
     }
 
-    listAdapter = new ListAdapter(tablemodel);
     counterAdapter.attach(listAdapter);
 
     //counterAdapter.detach(listAdapter);
@@ -68,12 +108,15 @@ Widget::Widget(QWidget *parent)
     connect(treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &Widget::on_selectionChangedSlot);
     connect(calcButton, &QPushButton::pressed, &counterAdapter, &SizeCounterAdapter::count);
     connect(stratagyBox, qOverload<int>(&QComboBox::currentIndexChanged), &counterAdapter, &SizeCounterAdapter::setStrategy);
+    connect(viewBox, qOverload<int>(&QComboBox::currentIndexChanged), stackedView, &QStackedWidget::setCurrentIndex);
 }
 
 
 Widget::~Widget()
 {
     delete listAdapter;
+    //delete pieChartCreator;
+    //delete barChartCreator;
 }
 
 
@@ -91,3 +134,4 @@ void Widget::on_selectionChangedSlot(const QItemSelection &selected, const QItem
     }
 
 }
+

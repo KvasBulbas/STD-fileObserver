@@ -2,6 +2,7 @@
 
 #include "filebrowserdatamodel.h"
 #include <sizecounteradapter.h>
+#include "chartcomponent.h"
 
 #include <QWidget>
 #include <QMainWindow>
@@ -11,6 +12,7 @@
 #include <QComboBox>
 #include<QFrame>
 #include <QPushButton>
+#include <QStackedWidget>
 
 class Widget : public QWidget
 {
@@ -19,6 +21,7 @@ class Widget : public QWidget
 private slots:
 
     void on_selectionChangedSlot(const QItemSelection &selected = QItemSelection(), const QItemSelection &deselected = QItemSelection());
+
 
 public:
     Widget(QWidget *parent = nullptr);
@@ -30,9 +33,18 @@ private:
     FileBrowserDataModel *tablemodel = nullptr;
     QTableView *tableView = nullptr;
     QComboBox *stratagyBox = nullptr;
+    QComboBox *viewBox;
     QFrame *topFrame = nullptr;
     QPushButton *calcButton = nullptr;
     SizeCounterAdapter &counterAdapter = SizeCounterAdapter::instanse();
-    ListAdapter* listAdapter;
+    TableAdapter* listAdapter = nullptr;
+
+    QChartView* pieView;
+    QChartView* barView;
+
+    QStackedWidget* stackedView;
+
+    ChartComponent* pieChartCreator = new PieChart();
+    ChartComponent* barChartCreator = new BarChart();
 
 };

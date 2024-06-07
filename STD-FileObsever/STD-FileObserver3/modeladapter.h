@@ -1,7 +1,9 @@
 #ifndef MODELADAPTER_H
 #define MODELADAPTER_H
 #include "filebrowserdatamodel.h"
+#include "chartcomponent.h"
 #include <QDebug>
+#include <QAbstractTableModel>
 
 class ModelObserver : public QObject
 {
@@ -13,30 +15,27 @@ public slots:
 };
 
 
-class ListAdapter: public ModelObserver
+class TableAdapter: public ModelObserver
 {
     Q_OBJECT
 
 
 public:
-    ListAdapter(FileBrowserDataModel* listModel) : listModel(listModel)
-    {
-        //listModel = new FileBrowserDataModel();
-    }
-
-//    ListAdapter(const ListAdapter& listAdapter)
-//    {
-//        return listAdapter.listModel;
-//    }
+    TableAdapter(FileBrowserDataModel* listModel) : listModel(listModel){}
 
     FileBrowserDataModel* getModel() override
     {
         return listModel;
     }
 
-    ~ListAdapter()
+    ~TableAdapter()
     {
-        //delete listModel;
+        delete listModel;
+    }
+
+    operator FileBrowserDataModel*()
+    {
+        return listModel;
     }
 
 public slots:
@@ -45,6 +44,16 @@ public slots:
         qDebug() << "uprdate";
         listModel->updateData(table);
     }
+
+private:
+    FileBrowserDataModel* listModel;
+};
+
+
+class PieChartAdapter: public ModelObserver
+{
+
+
 private:
     FileBrowserDataModel* listModel;
 };
