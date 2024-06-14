@@ -11,7 +11,7 @@ void ChartComponentCreator::addVisualization(QChart* chart)
     chart->createDefaultAxes();
 }
 
-void PieChartCreator::drawChart(QVector<TableItem> table, QChart* chart)
+void PieChartCreator::drawChart(const QVector<TableItem>& table, QChart* chart)
 {
     chart->removeAllSeries();
 
@@ -21,24 +21,30 @@ void PieChartCreator::drawChart(QVector<TableItem> table, QChart* chart)
     for(int i = 0; i < table.size(); i++)
         total += table[i].itemSize;
 
-    double other;
-    for(int i = 0; i < table.size(); i++)
+    if(total)
     {
-        double percent = (double)table[i].itemSize/total*100;
-        if(percent > 5)
-            series->append(table[i].itemName, percent);
-        else
-            other += percent;
-    }
+        double other = 0;
+        for(int i = 0; i < table.size(); i++)
+        {
+            double percent = (double)table[i].itemSize/total*100;
+            if(percent > 5)
+                series->append(table[i].itemName, percent);
+            else
+                other += percent;
+        }
 
-    if(other)
-        series->append("other", other);
+        if(other)
+            series->append("other", other);
+
+    }
+    else
+        series->append("empty sizes", 0);
     chart->addSeries(series);
 }
 
 
 
-void BarChartCreator::drawChart(QVector<TableItem> table, QChart* chart)
+void BarChartCreator::drawChart(const QVector<TableItem>& table, QChart* chart)
 {
     chart->removeAllSeries();
 
@@ -48,25 +54,34 @@ void BarChartCreator::drawChart(QVector<TableItem> table, QChart* chart)
     for(int i = 0; i < table.size(); i++)
         total += table[i].itemSize;
 
-    double other;
-    for(int i = 0; i < table.size(); i++)
+    if(total)
     {
-        QBarSet* set = new QBarSet(table[i].itemName);
-
-        double percent = (double)table[i].itemSize/total*100;
-        if(percent > 5)
+        double other = 0;
+        for(int i = 0; i < table.size(); i++)
         {
-            *set << percent;
+            QBarSet* set = new QBarSet(table[i].itemName);
+
+            double percent = (double)table[i].itemSize/total*100;
+            if(percent > 5)
+            {
+                *set << percent;
+                series->append(set);
+            }
+            else
+                other += percent;
+        }
+
+        if(other)
+        {
+            QBarSet* set = new QBarSet("other");
+            *set << other;
             series->append(set);
         }
-        else
-            other += percent;
     }
-
-    if(other)
+    else
     {
-        QBarSet* set = new QBarSet("other");
-        *set << other;
+        QBarSet* set = new QBarSet("empty sizes");
+        *set << 0;
         series->append(set);
     }
 

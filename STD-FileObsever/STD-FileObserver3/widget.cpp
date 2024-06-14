@@ -26,17 +26,20 @@ Widget::Widget(QWidget *parent)
     treeView = new QTreeView(this);
     treeView->setModel(dirModel);
 
-    tableAdapter = new TableAdapter(new FileBrowserDataModel);
+    tableModel = new FileBrowserDataModel(this);
+    tableAdapter = new TableAdapter(tableModel);
 
     tableView = new QTableView(this);
     tableView->setModel(tableAdapter->getModel());
 
-    pieAdapter = new PieChartAdapter(new QChart);
+    pieChart = new QChart;
+    pieAdapter = new PieChartAdapter(pieChart);
 
     pieView = new QChartView(this);
     pieView->setChart(pieAdapter->getModel());
 
-    barAdapter = new BarChartAdapter(new QChart);
+    barChart = new QChart;
+    barAdapter = new BarChartAdapter(barChart);
 
     barView = new QChartView(this);
     barView->setChart(barAdapter->getModel());
@@ -82,14 +85,14 @@ Widget::Widget(QWidget *parent)
         vbox->addLayout(hbox1);
     }
 
-    counterAdapter.attach(tableAdapter);
-    counterAdapter.attach(pieAdapter);
-    counterAdapter.attach(barAdapter);
+    counterStorage.attach(tableAdapter);
+    counterStorage.attach(pieAdapter);
+    counterStorage.attach(barAdapter);
     //counterAdapter.detach(listAdapter);
 
     connect(treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &Widget::on_selectionChangedSlot);
-    connect(calcButton, &QPushButton::pressed, &counterAdapter, &SizeCounterStorage::count);
-    connect(stratagyBox, qOverload<int>(&QComboBox::currentIndexChanged), &counterAdapter, &SizeCounterStorage::setStrategy);
+    connect(calcButton, &QPushButton::pressed, &counterStorage, &SizeCounterStorage::count);
+    connect(stratagyBox, qOverload<int>(&QComboBox::currentIndexChanged), &counterStorage, &SizeCounterStorage::setStrategy);
     connect(viewBox, qOverload<int>(&QComboBox::currentIndexChanged), stackedView, &QStackedWidget::setCurrentIndex);
 }
 
@@ -98,6 +101,8 @@ Widget::~Widget()
     delete tableAdapter;
     delete pieAdapter;
     delete barAdapter;
+    delete pieChart;
+    delete barChart;
 }
 
 void Widget::on_selectionChangedSlot(const QItemSelection &selected, const QItemSelection &deselected)
@@ -109,7 +114,7 @@ void Widget::on_selectionChangedSlot(const QItemSelection &selected, const QItem
 
     if(dirPath != "")
     {
-        counterAdapter.setPath(dirPath);
+        counterStorage.setPath(dirPath);
     }
 
 }

@@ -30,12 +30,15 @@ private:
 
     TableAdapter* tableAdapter = nullptr;
     QTableView *tableView = nullptr;
+    FileBrowserDataModel *tableModel = nullptr;
 
     PieChartAdapter* pieAdapter = nullptr;
     QChartView* pieView = nullptr;
+    QChart* pieChart = nullptr;
 
     BarChartAdapter* barAdapter = nullptr;
     QChartView* barView = nullptr;
+    QChart* barChart = nullptr;
 
     QComboBox *stratagyBox = nullptr;
     QComboBox *viewBox = nullptr;
@@ -43,7 +46,7 @@ private:
     QPushButton *calcButton = nullptr;
     QStackedWidget* stackedView;
 
-    SizeCounterStorage &counterAdapter = SizeCounterStorage::instanse();
+    SizeCounterStorage &counterStorage = SizeCounterStorage::instanse();
 
 
 };

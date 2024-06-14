@@ -19,10 +19,7 @@ public:
 
 
 public slots:
-    void updateData();
-    void setPath(const QString newPath);
-    void setStrategy(int index);
-
+    void updateData(const QVector<TableItem>& newData);
 
 private:
     enum NameColumn {
@@ -32,8 +29,4 @@ private:
     };
 
     QVector<TableItem> dataModel;
-    QString dirPath = "";
-    QVector<ISizeCounting*> strategiesPtr;
-    SizeCounter* counter;
-
 };

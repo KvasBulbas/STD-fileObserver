@@ -11,34 +11,29 @@
 class ChartComponentCreator
 {
 public:
-    void createChart(QVector<TableItem> table, QChart* chart)
+    void createChart(const QVector<TableItem>& table, QChart* chart)
     {
-        allocateChart(&chart);
-        addVisualization(chart);
-        drawChart(table, chart);
-    }
-
-protected:
-    void allocateChart(QChart** chart)
-    {
-        if(!(*chart))
+        if(chart)
         {
-            *chart = new QChart;
+            addVisualization(chart);
+            drawChart(table, chart);
         }
     }
 
-    virtual void drawChart(QVector<TableItem> table, QChart* chart) = 0;
+protected:
+
+    virtual void drawChart(const QVector<TableItem>& table, QChart* chart) = 0;
     virtual void addVisualization(QChart* chart);
 };
 
 class PieChartCreator : public ChartComponentCreator
 {
-    void drawChart(QVector<TableItem> table, QChart* chart) override;
+    void drawChart(const QVector<TableItem>& table, QChart* chart) override;
 };
 
 class BarChartCreator : public ChartComponentCreator
 {
-    void drawChart(QVector<TableItem> table, QChart* chart) override;
+    void drawChart(const QVector<TableItem>& table, QChart* chart) override;
 };
 
 

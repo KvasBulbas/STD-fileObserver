@@ -10,6 +10,7 @@
 #include <QComboBox>
 #include<QFrame>
 #include <QPushButton>
+#include <counterStorage.h>
 
 class Widget : public QWidget
 {
@@ -32,5 +33,6 @@ private:
     QFrame *topFrame = nullptr;
     QPushButton *calcButton = nullptr;
 
+    SizeCounterStorage &counterStorage = SizeCounterStorage::instanse();
 
 };

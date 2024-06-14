@@ -17,7 +17,9 @@ SOURCES += \
 
 HEADERS += \
     SizeCounting.h \
+    counterStorage.h \
     filebrowserdatamodel.h \
+    sizecounterstorage.h \
     widget.h
 
 # Default rules for deployment.

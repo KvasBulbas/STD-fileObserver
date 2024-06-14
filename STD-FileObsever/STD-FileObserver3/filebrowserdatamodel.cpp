@@ -71,13 +71,15 @@ QVariant FileBrowserDataModel::data(const QModelIndex &index, int role) const
         for(int i = 0; i < dataModel.size(); i++)
             total += dataModel[i].itemSize;
 
-        return QString::number((double)dataModel[index.row()].itemSize/total*100) + "%";
+        if(total)
+            return QString::number((double)dataModel[index.row()].itemSize/total*100) + "%";
+        return "0%";
     }
 
     return QVariant();
 }
 
-void FileBrowserDataModel::updateData(QVector<TableItem> newData)
+void FileBrowserDataModel::updateData(const QVector<TableItem>& newData)
 {
     dataModel = newData;
     layoutChanged();

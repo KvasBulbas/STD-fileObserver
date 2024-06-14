@@ -23,7 +23,7 @@ public:
     }
 
 signals:
-    void notify(QVector<TableItem> table);
+    void notify(const QVector<TableItem>& table);
 
 };
 

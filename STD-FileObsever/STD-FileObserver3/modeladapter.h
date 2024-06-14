@@ -9,7 +9,7 @@ class ModelObserver : public QObject
 {
     Q_OBJECT
 public slots:
-    virtual void update(QVector<TableItem> table) = 0;
+    virtual void update(const QVector<TableItem>& table) = 0;
 
 };
 
@@ -29,18 +29,19 @@ public:
 
     ~TableAdapter()
     {
-        delete tableModel;
+
     }
 
 public slots:
-    void update(QVector<TableItem> table) override
+    void update(const QVector<TableItem>& table) override
     {
         qDebug() << "table adapter update";
-        tableModel->updateData(table);
+        if(tableModel)
+            tableModel->updateData(table);
     }
 
 private:
-    FileBrowserDataModel* tableModel;
+    FileBrowserDataModel* tableModel = nullptr;
 };
 
 
@@ -52,7 +53,7 @@ public:
 
     ~PieChartAdapter()
     {
-        delete chart;
+
     }
 
     QChart* getModel()
@@ -61,7 +62,7 @@ public:
     }
 
 public slots:
-    void update(QVector<TableItem> table) override
+    void update(const QVector<TableItem>& table) override
     {
         qDebug() << "pie chart adapter update";
 
@@ -82,7 +83,7 @@ public:
 
     ~BarChartAdapter()
     {
-        delete chart;
+
     }
 
     QChart* getModel()
@@ -91,7 +92,7 @@ public:
     }
 
 public slots:
-    void update(QVector<TableItem> table) override
+    void update(const QVector<TableItem>& table) override
     {
         qDebug() << "bar chart adapter update";
 

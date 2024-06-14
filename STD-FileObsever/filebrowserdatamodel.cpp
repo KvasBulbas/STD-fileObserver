@@ -6,18 +6,11 @@ FileBrowserDataModel::FileBrowserDataModel(QObject *parent, QVector<TableItem> d
     : QAbstractTableModel(parent)
 {
     dataModel = dt;
-
-    strategiesPtr.push_back(new Directory_SizeCounting);
-    strategiesPtr.push_back(new Suffix_SizeCounting);
-    counter = new SizeCounter(strategiesPtr[0]);
-
 }
 
 FileBrowserDataModel::~FileBrowserDataModel()
 {
-    delete counter;
-    for(int i = 0; i < strategiesPtr.size(); i++)
-        delete strategiesPtr[i];
+
 }
 
 int FileBrowserDataModel::rowCount(const QModelIndex &parent) const
@@ -83,29 +76,13 @@ QVariant FileBrowserDataModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-void FileBrowserDataModel::updateData()
+void FileBrowserDataModel::updateData(const QVector<TableItem>& newData)
 {
-    if(counter && dirPath != "")
-        dataModel = counter->sortTable(counter->count(dirPath));
-
+    dataModel = newData;
     layoutChanged();
-
 }
 
-void FileBrowserDataModel::setPath(const QString newPath)
-{
-    dirPath = newPath;
-}
 
-void FileBrowserDataModel::setStrategy(int index)
-{
-    if(index < strategiesPtr.size())
-    {
-        if(counter)
-            delete counter;
-        counter = new SizeCounter(strategiesPtr[index]);
-    }
-}
 
 
 

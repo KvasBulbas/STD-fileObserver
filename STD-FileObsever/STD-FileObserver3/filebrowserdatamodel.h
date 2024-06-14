@@ -19,7 +19,7 @@ public:
 
 
 public slots:
-    void updateData(QVector<TableItem> newData);
+    void updateData(const QVector<TableItem>& newData);
 
 private:
     enum NameColumn {

@@ -61,9 +61,9 @@ Widget::Widget(QWidget *parent)
     }
 
     connect(treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &Widget::on_selectionChangedSlot);
-    connect(stratagyBox, qOverload<int>(&QComboBox::currentIndexChanged), tablemodel, &FileBrowserDataModel::setStrategy);
-    connect(calcButton, &QPushButton::pressed, tablemodel, &FileBrowserDataModel::updateData);
-    //disconnect(calcButton, &QPushButton::pressed, tablemodel, &FileBrowserDataModel::updateData);
+    connect(calcButton, &QPushButton::pressed, &counterStorage, &SizeCounterStorage::count);
+    connect(stratagyBox, qOverload<int>(&QComboBox::currentIndexChanged), &counterStorage, &SizeCounterStorage::setStrategy);
+    connect(&counterStorage, &SizeCounterStorage::notify, tablemodel, &FileBrowserDataModel::updateData);
 }
 
 Widget::~Widget()
@@ -81,7 +81,7 @@ void Widget::on_selectionChangedSlot(const QItemSelection &selected, const QItem
 
     if(dirPath != "")
     {
-        tablemodel->setPath(dirPath);
+        counterStorage.setPath(dirPath);
     }
 
 }
